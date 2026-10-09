@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan KPK - Media Pembelajaran Interaktif Kelas 5 SD</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans for cute friendly theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FFC72C',
+                            orange: '#FF8A00',
+                            blue: '#4A90E2',
+                            green: '#2ECC71',
+                            purple: '#9B59B6',
+                            red: '#E74C3C',
+                            lightBg: '#F7FAFC'
+                        }
+                    },
+                    boxShadow: {
+                        'game': '0 8px 0px 0px rgba(0,0,0,0.15)',
+                        'game-sm': '0 4px 0px 0px rgba(0,0,0,0.12)',
+                        'game-pressed': '0 2px 0px 0px rgba(0,0,0,0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F3F4F6;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .title-font {
+            font-family: 'Fredoka', cursive;
+        }
+        .card-bounce {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card-bounce:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .tree-line {
+            stroke: #4B5563;
+            stroke-width: 3;
+            stroke-dasharray: 4;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pulse-anim {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Bar Navigation -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-4 border-amber-300 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('beranda')">
+                    <div class="bg-amber-400 text-white p-3 rounded-2xl shadow-game-sm transform -rotate-3">
+                        <i class="fa-solid fa-calculator text-2xl sm:text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="title-font text-xl sm:text-2xl font-bold text-slate-800 tracking-wide flex items-center gap-2">
+                            Petualangan <span class="text-amber-500">KPK</span> 🚀
+                        </h1>
+                        <p class="text-xs text-slate-500 font-semibold hidden sm:block">Matematika SD Kelas 5 - Faktorisasi Prima</p>
+                    </div>
+                </div>
+
+                <!-- Score & Progress Indicator -->
+                <div class="flex items-center gap-3 bg-amber-50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl border-2 border-amber-200">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-star text-amber-500 text-lg sm:text-xl"></i>
+                        <span id="global-score" class="title-font font-bold text-lg sm:text-xl text-amber-600">0</span>
+                    </div>
+                    <div class="h-6 w-0.5 bg-amber-200"></div>
+                    <div class="flex items-center gap-1.5">
+                        <span id="level-badge" class="px-2 py-0.5 bg-amber-200 text-amber-800 font-bold text-xs rounded-full title-font">
+                            Level: Pemula
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Navigation Tabs -->
+            <nav class="flex justify-center sm:justify-start overflow-x-auto py-2 gap-1 sm:gap-2 no-scrollbar text-xs sm:text-sm font-semibold">
+                <button onclick="switchTab('beranda')" id="tab-beranda" class="nav-btn active flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-house"></i> <span>Beranda</span>
+                </button>
+                <button onclick="switchTab('materi')" id="tab-materi" class="nav-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-book-open"></i> <span>Materi</span>
+                </button>
+                <button onclick="switchTab('simulasi')" id="tab-simulasi" class="nav-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-flask"></i> <span>Simulasi</span>
+                </button>
+                <button onclick="switchTab('permainan')" id="tab-permainan" class="nav-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-gamepad"></i> <span>Permainan</span>
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="nav-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-pen-to-square"></i> <span>Kuis</span>
+                </button>
+                <button onclick="switchTab('hasil')" id="tab-hasil" class="nav-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-trophy"></i> <span>Hasil</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sound Effects Synthesizer & Modal Overlay Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- SECTION 1: BERANDA -->
+        <section id="sec-beranda" class="tab-content block space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+                        🎓 Pembelajaran Interaktif Matematika
+                    </span>
+                    <h2 class="title-font text-3xl sm:text-5xl font-extrabold tracking-wide leading-tight">
+                        Taklukkan KPK dengan Faktorisasi Prima!
+                    </h2>
+                    <p class="text-amber-50 text-sm sm:text-base leading-relaxed">
+                        Halo Petualang Cilik! Mari belajar menemukan **Kelipatan Persekutuan Terkecil (KPK)** dengan cara seru lewat Pohon Faktor, permainan tantangan, dan simulasi ajaib!
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <button onclick="switchTab('simulasi')" class="bg-white text-orange-600 font-bold px-6 py-3 rounded-2xl shadow-game hover:bg-amber-50 active:translate-y-1 transition-all flex items-center gap-2 title-font">
+                            <i class="fa-solid fa-play"></i> Mulai Simulasi
+                        </button>
+                        <button onclick="switchTab('materi')" class="bg-orange-600/30 text-white font-bold px-6 py-3 rounded-2xl border-2 border-white/40 hover:bg-orange-600/50 transition-all flex items-center gap-2 title-font">
+                            <i class="fa-solid fa-book"></i> Baca Materi
+                        </button>
+                    </div>
+                </div>
+                <!-- Cute Decorative Icons -->
+                <div class="absolute -right-10 -bottom-10 opacity-20 text-white text-[200px] pointer-events-none hidden md:block">
+                    <i class="fa-solid fa-tree"></i>
+                </div>
+            </div>
+
+            <!-- Profile & Avatar Selector -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 grid md:grid-cols-3 gap-6 items-center">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase text-slate-400">Profil Petualang</label>
+                    <div class="flex items-center gap-3">
+                        <div id="user-avatar" class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl border-2 border-amber-400">
+                            🦊
+                        </div>
+                        <div>
+                            <input type="text" id="student-name-input" value="Siswa Hebat" class="font-bold text-lg text-slate-800 border-b-2 border-amber-300 focus:outline-none focus:border-amber-500 bg-transparent w-full" placeholder="Masukkan Namamu...">
+                            <p class="text-xs text-slate-500">Kelas 5 SD • Matematika</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase text-slate-400">Pilih Avatar Favorit</label>
+                    <div class="flex gap-2 text-2xl">
+                        <button onclick="setAvatar('🦊')" class="p-2 bg-slate-100 hover:bg-amber-100 rounded-xl transition">🦊</button>
+                        <button onclick="setAvatar('🦁')" class="p-2 bg-slate-100 hover:bg-amber-100 rounded-xl transition">🦁</button>
+                        <button onclick="setAvatar('🐼')" class="p-2 bg-slate-100 hover:bg-amber-100 rounded-xl transition">🐼</button>
+                        <button onclick="setAvatar('🤖')" class="p-2 bg-slate-100 hover:bg-amber-100 rounded-xl transition">🤖</button>
+                        <button onclick="setAvatar('🚀')" class="p-2 bg-slate-100 hover:bg-amber-100 rounded-xl transition">🚀</button>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 space-y-1">
+                    <div class="flex justify-between text-xs font-bold text-amber-800">
+                        <span>Target Kelulusan Materi</span>
+                        <span id="overall-progress-text">0%</span>
+                    </div>
+                    <div class="w-full bg-amber-200 h-3 rounded-full overflow-hidden">
+                        <div id="overall-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <p class="text-[11px] text-amber-700 font-medium">Selesaikan materi, simulasi, dan tantangan untuk mendapatkan Pin Emas!</p>
+                </div>
+            </div>
+
+            <!-- Target Pembelajaran Cards -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex gap-3 items-start">
+                    <div class="p-3 bg-emerald-500 text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-seedling text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-emerald-900 title-font">Bilangan Prima</h3>
+                        <p class="text-xs text-emerald-700 leading-snug">Mengenal bilangan yang hanya punya 2 faktor: 1 dan dirinya sendiri (2, 3, 5, 7...)</p>
+                    </div>
+                </div>
+
+                <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 flex gap-3 items-start">
+                    <div class="p-3 bg-sky-500 text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-sitemap text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sky-900 title-font">Pohon Faktor</h3>
+                        <p class="text-xs text-sky-700 leading-snug">Membagi bilangan dengan faktor prima sampai tidak bisa dibagi lagi.</p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 flex gap-3 items-start">
+                    <div class="p-3 bg-purple-500 text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-calculator text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-purple-900 title-font">Faktorisasi Prima</h3>
+                        <p class="text-xs text-purple-700 leading-snug">Menuliskan bilangan dalam bentuk perkalian bilangan-bilangan prima.</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex gap-3 items-start">
+                    <div class="p-3 bg-amber-500 text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-bullseye text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-amber-900 title-font">Rumus Emas KPK</h3>
+                        <p class="text-xs text-amber-700 leading-snug">Kalikan **semua faktor prima**, jika ada yang sama pilih **pangkat terbesar**!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MATERI PEMBELAJARAN -->
+        <section id="sec-materi" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                <!-- Header -->
+                <div class="border-b pb-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wide">Panduan Konsep</span>
+                        <h2 class="title-font text-2xl sm:text-3xl font-bold text-slate-800">
+                            📚 Memahami Faktorisasi Prima & KPK
+                        </h2>
+                    </div>
+                    <button onclick="playSound('pop')" class="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-xl text-xs font-bold">
+                        <i class="fa-solid fa-volume-high"></i> Audio Panduan
+                    </button>
+                </div>
+
+                <!-- Interactive Steps -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Step 1 -->
+                    <div class="bg-slate-50 rounded-2xl p-5 border-2 border-slate-200 hover:border-amber-400 transition-all space-y-3">
+                        <div class="w-8 h-8 bg-amber-400 text-white font-bold rounded-xl flex items-center justify-center title-font">1</div>
+                        <h3 class="font-bold text-lg text-slate-800 title-font">Apa itu Bilangan Prima?</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Bilangan prima adalah bilangan asli yang lebih besar dari 1 dan **hanya memiliki 2 faktor**, yaitu angka **1** dan **bilangan itu sendiri**.
+                        </p>
+                        <div class="bg-amber-100/60 p-3 rounded-xl text-xs text-amber-900 font-semibold">
+                            Contoh Bilangan Prima: <br>
+                            <span class="text-amber-700 font-bold text-sm">2, 3, 5, 7, 11, 13, 17, 19, 23...</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-slate-50 rounded-2xl p-5 border-2 border-slate-200 hover:border-amber-400 transition-all space-y-3">
+                        <div class="w-8 h-8 bg-orange-400 text-white font-bold rounded-xl flex items-center justify-center title-font">2</div>
+                        <h3 class="font-bold text-lg text-slate-800 title-font">Membuat Pohon Faktor</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Bagilah bilangan berturut-turut dengan bilangan prima terkecil (2, 3, 5, dst.) hingga hasilnya berupa bilangan prima.
+                        </p>
+                        <div class="bg-orange-100/60 p-3 rounded-xl text-xs text-orange-900 font-medium">
+                            Contoh Pohon Faktor 12: <br>
+                            • 12 ÷ <strong class="text-rose-600">2</strong> = 6 <br>
+                            • 6 ÷ <strong class="text-rose-600">2</strong> = <strong class="text-rose-600">3</strong> <br>
+                            Faktorisasi Prima 12 = <span class="font-bold text-slate-800">2² × 3</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-slate-50 rounded-2xl p-5 border-2 border-slate-200 hover:border-amber-400 transition-all space-y-3">
+                        <div class="w-8 h-8 bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center title-font">3</div>
+                        <h3 class="font-bold text-lg text-slate-800 title-font">Aturan Rahasia KPK</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            KPK singkatan dari Kelipatan Persekutuan Terkecil. Kuncinya:
+                        </p>
+                        <div class="bg-emerald-100/80 p-3 rounded-xl text-xs text-emerald-900 font-semibold space-y-1">
+                            <p class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Ambil <strong>semua faktor prima</strong>.</p>
+                            <p class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Jika ada faktor sama, pilih <strong>pangkat terbesar</strong>!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Example Case Study -->
+                <div class="bg-gradient-to-br from-indigo-50 to-sky-50 rounded-2xl p-6 border-2 border-indigo-100 space-y-4">
+                    <h3 class="font-bold text-indigo-900 text-lg title-font flex items-center gap-2">
+                        💡 Contoh Studi Kasus Ringkas
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm space-y-2">
+                            <p class="font-bold text-slate-700">Soal: Tentukan KPK dari 12 dan 18!</p>
+                            <ol class="list-decimal list-inside space-y-1 text-slate-600">
+                                <li>Faktorisasi Prima 12 = <span class="font-bold text-amber-600">2² × 3</span></li>
+                                <li>Faktorisasi Prima 18 = <span class="font-bold text-sky-600">2 × 3²</span></li>
+                                <li>Faktor prima yang muncul: <strong>2</strong> dan <strong>3</strong></li>
+                                <li>Pangkat terbesar faktor 2 adalah <span class="bg-amber-100 px-1 font-bold">2²</span></li>
+                                <li>Pangkat terbesar faktor 3 adalah <span class="bg-sky-100 px-1 font-bold">3²</span></li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-between space-y-3">
+                            <p class="font-bold text-slate-700">Hasil Akhir Perhitungan KPK:</p>
+                            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center">
+                                <span class="text-xs text-emerald-700 font-bold">KPK(12, 18) = 2² × 3²</span>
+                                <div class="text-2xl font-black text-emerald-600 title-font mt-1">
+                                    4 × 9 = 36
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-slate-500 italic">
+                                Artinya, angka 36 adalah kelipatan terkecil yang bisa dibagi habis oleh 12 maupun 18!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: SIMULASI INTERAKTIF -->
+        <section id="sec-simulasi" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                <!-- Title -->
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wide">Laboratorium Matematika</span>
+                        <h2 class="title-font text-2xl sm:text-3xl font-bold text-slate-800">
+                            🔬 Laboratorium Mesin Pohon Faktor & KPK
+                        </h2>
+                    </div>
+                    <p class="text-xs text-slate-500 max-w-xs">
+                        Pilih 2 angka di bawah ini untuk melihat pohon faktor, faktorisasi prima, dan pembentukan KPK secara otomatis!
+                    </p>
+                </div>
+
+                <!-- Controls -->
+                <div class="bg-amber-50 p-4 sm:p-6 rounded-2xl border border-amber-200 grid sm:grid-cols-3 gap-4 items-center">
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Bilangan Pertama (A):</label>
+                        <select id="sim-num-1" onchange="runSimulation()" class="w-full bg-white font-bold text-slate-800 p-3 rounded-xl border-2 border-amber-300 focus:outline-none focus:border-amber-500 title-font text-lg">
+                            <option value="12">12</option>
+                            <option value="15">15</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                            <option value="24" selected>24</option>
+                            <option value="30">30</option>
+                            <option value="36">36</option>
+                            <option value="40">40</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Bilangan Kedua (B):</label>
+                        <select id="sim-num-2" onchange="runSimulation()" class="w-full bg-white font-bold text-slate-800 p-3 rounded-xl border-2 border-amber-300 focus:outline-none focus:border-amber-500 title-font text-lg">
+                            <option value="12">12</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="36" selected>36</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="60">60</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:pt-5">
+                        <button onclick="runSimulation()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-game hover:shadow-game-sm transition-all title-font flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Generasi Pohon Faktor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Simulation Visual Output Grid -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Tree 1 -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <h4 class="title-font font-bold text-slate-800 text-lg">
+                                Pohon Faktor Bilangan <span id="sim-title-a" class="text-amber-600 font-extrabold">24</span>
+                            </h4>
+                            <span id="sim-fact-a-badge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">2³ × 3</span>
+                        </div>
+                        <div id="sim-tree-a-container" class="min-h-[220px] flex flex-col items-center justify-center py-4 overflow-x-auto">
+                            <!-- Dynamically generated tree SVG or HTML nodes -->
+                        </div>
+                    </div>
+
+                    <!-- Tree 2 -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <h4 class="title-font font-bold text-slate-800 text-lg">
+                                Pohon Faktor Bilangan <span id="sim-title-b" class="text-sky-600 font-extrabold">36</span>
+                            </h4>
+                            <span id="sim-fact-b-badge" class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-1 rounded-full">2² × 3²</span>
+                        </div>
+                        <div id="sim-tree-b-container" class="min-h-[220px] flex flex-col items-center justify-center py-4 overflow-x-auto">
+                            <!-- Dynamically generated tree SVG or HTML nodes -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Combination & Cause Effect Explanation Card -->
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-6 rounded-2xl shadow-lg space-y-4">
+                    <h4 class="title-font text-xl font-bold flex items-center gap-2">
+                        🎯 Analisis Penentuan Nilai KPK
+                    </h4>
+                    <div class="grid sm:grid-cols-3 gap-4 text-slate-800">
+                        <div class="bg-white p-4 rounded-xl shadow-sm space-y-1">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase">Perbandingan Faktor Prima</span>
+                            <p id="sim-compare-detail" class="text-xs font-medium leading-relaxed text-slate-600">
+                                Loading...
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm space-y-1">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase">Faktor Pangkat Terbesar</span>
+                            <p id="sim-max-powers" class="text-xs font-bold text-emerald-700">
+                                Loading...
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col justify-center items-center text-center">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase">Hasil Akhir KPK</span>
+                            <div id="sim-kpk-result" class="title-font text-3xl font-black text-amber-500 mt-1">
+                                72
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PERMAINAN (MINI-GAMES HUB) -->
+        <section id="sec-permainan" class="tab-content hidden space-y-6">
+            <!-- Game Modes Menu -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-rose-500 uppercase tracking-wide">Arena Permainan</span>
+                        <h2 class="title-font text-2xl sm:text-3xl font-bold text-slate-800">
+                            🎮 Modul Aktivitas Permainan Interaktif
+                        </h2>
+                    </div>
+                    <p class="text-xs text-slate-500">Pilih salah satu mode aktivitas di bawah ini!</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="switchGameSubTab('openthebox')" id="btn-game-openthebox" class="game-sub-tab p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-800 font-bold text-xs sm:text-sm hover:bg-amber-100 transition flex flex-col items-center gap-2 title-font">
+                        <i class="fa-solid fa-box-open text-2xl text-amber-500"></i>
+                        <span>1. Open The Box</span>
+                    </button>
+                    <button onclick="switchGameSubTab('dragdrop')" id="btn-game-dragdrop" class="game-sub-tab p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-100 transition flex flex-col items-center gap-2 title-font">
+                        <i class="fa-solid fa-hand-pointer text-2xl text-sky-500"></i>
+                        <span>2. Drag & Drop</span>
+                    </button>
+                    <button onclick="switchGameSubTab('menjodohkan')" id="btn-game-menjodohkan" class="game-sub-tab p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-100 transition flex flex-col items-center gap-2 title-font">
+                        <i class="fa-solid fa-link text-2xl text-purple-500"></i>
+                        <span>3. Menjodohkan</span>
+                    </button>
+                    <button onclick="switchGameSubTab('tantangan')" id="btn-game-tantangan" class="game-sub-tab p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-100 transition flex flex-col items-center gap-2 title-font">
+                        <i class="fa-solid fa-stopwatch text-2xl text-rose-500"></i>
+                        <span>4. Tantangan Cepat</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- GAME MODE 1: OPEN THE BOX -->
+            <div id="game-sec-openthebox" class="game-sub-sec block bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="title-font text-xl font-bold text-slate-800 flex items-center gap-2">
+                            📦 Permainan: Open The Box
+                        </h3>
+                        <p class="text-xs text-slate-500">Buka 5 kotak misteri secara berurutan dan jawab pertanyaannya!</p>
+                    </div>
+                    <span class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">Poin per kotak: 20 pt</span>
+                </div>
+
+                <!-- 5 Boxes Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="box-grid">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+
+                <!-- Active Box Challenge Modal/Panel -->
+                <div id="box-challenge-panel" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+                        <span id="box-panel-title" class="title-font font-bold text-amber-900 text-lg">Misteri Kotak #1</span>
+                        <button onclick="closeBoxPanel()" class="text-amber-800 hover:text-amber-900 text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    <p id="box-panel-question" class="font-semibold text-slate-800 text-sm sm:text-base">
+                        Soal...
+                    </p>
+                    <div id="box-panel-options" class="grid sm:grid-cols-2 gap-3">
+                        <!-- Options injected JS -->
+                    </div>
+                    <div id="box-panel-feedback" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+                </div>
+            </div>
+
+            <!-- GAME MODE 2: DRAG AND DROP (WITH TAP FALLBACK) -->
+            <div id="game-sec-dragdrop" class="game-sub-sec hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="title-font text-xl font-bold text-slate-800 flex items-center gap-2">
+                            🧩 Permainan: Drag & Drop (Susun Pohon & Faktor Prima)
+                        </h3>
+                        <p class="text-xs text-slate-500">Tarik atau Ketuk angka prima ke dalam kotak target yang kosong!</p>
+                    </div>
+                    <button onclick="resetDragDrop()" class="text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1 rounded-xl hover:bg-sky-100">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Permainan
+                    </button>
+                </div>
+
+                <!-- Interactive Drag-and-Drop Board (5 Challenges) -->
+                <div class="space-y-6" id="dragdrop-list">
+                    <!-- Injected JS -->
+                </div>
+
+                <div class="text-center pt-2">
+                    <button onclick="checkDragDropAll()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold px-6 py-3 rounded-2xl shadow-game title-font">
+                        <i class="fa-solid fa-check"></i> Periksa Semua Jawaban Drag & Drop
+                    </button>
+                </div>
+            </div>
+
+            <!-- GAME MODE 3: MENJODOHKAN (MATCHING PAIRS) -->
+            <div id="game-sec-menjodohkan" class="game-sub-sec hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="title-font text-xl font-bold text-slate-800 flex items-center gap-2">
+                            🔗 Permainan: Menjodohkan Pasangan KPK
+                        </h3>
+                        <p class="text-xs text-slate-500">Klik satu kartu di sebelah kiri, lalu klik pasangan KPK yang tepat di sebelah kanan!</p>
+                    </div>
+                    <span id="match-score-badge" class="text-xs font-bold bg-purple-100 text-purple-800 px-3 py-1 rounded-full">Terjodohkan: 0/5</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 sm:gap-8 min-h-[300px]" id="matching-board">
+                    <!-- JS generated left & right columns -->
+                </div>
+            </div>
+
+            <!-- GAME MODE 4: TANTANGAN CEPAT (TIME ATTACK) -->
+            <div id="game-sec-tantangan" class="game-sub-sec hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-rose-50 border-2 border-rose-200 p-5 rounded-2xl">
+                    <div>
+                        <h3 class="title-font text-xl font-bold text-rose-900 flex items-center gap-2">
+                            ⏱️ Permainan: Tantangan Cepat 60 Detik
+                        </h3>
+                        <p class="text-xs text-rose-700">Jawab sebanyak mungkin soal kilat sebelum waktu habis!</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center">
+                            <span class="block text-[10px] font-bold uppercase text-rose-400">Sisa Waktu</span>
+                            <span id="time-attack-timer" class="title-font font-black text-3xl text-rose-600">60</span>
+                        </div>
+                        <button id="btn-start-timeattack" onclick="startTimeAttack()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-5 py-3 rounded-xl shadow-game title-font">
+                            <i class="fa-solid fa-play"></i> Mulai Tantangan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Challenge Area -->
+                <div id="timeattack-box" class="hidden bg-slate-50 border-2 border-slate-200 rounded-2xl p-6 space-y-4 text-center">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Soal Kilat</span>
+                    <h4 id="ta-question-text" class="title-font text-2xl sm:text-3xl font-extrabold text-slate-800">
+                        KPK dari 4 dan 6 adalah...
+                    </h4>
+                    <div id="ta-options-container" class="grid grid-cols-2 gap-3 max-w-md mx-auto pt-2">
+                        <!-- Options generated JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: KUIS -->
+        <section id="sec-kuis" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                <!-- Title -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wide">Uji Pemahaman</span>
+                        <h2 class="title-font text-2xl sm:text-3xl font-bold text-slate-800">
+                            📝 Kuis Evaluasi KPK & Faktorisasi Prima
+                        </h2>
+                    </div>
+                    <p class="text-xs text-slate-500">Lengkapi ketiga bagian kuis untuk mendapatkan Nilai Rapor Sempurna!</p>
+                </div>
+
+                <!-- Quiz Sub-Navigation -->
+                <div class="flex gap-2 border-b pb-2">
+                    <button onclick="switchQuizSubTab('pg')" id="quiz-btn-pg" class="quiz-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-400 text-white shadow-sm">
+                        1. Pilihan Ganda (5 Soal)
+                    </button>
+                    <button onclick="switchQuizSubTab('fill')" id="quiz-btn-fill" class="quiz-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-600">
+                        2. Fill in the Blank (5 Soal)
+                    </button>
+                    <button onclick="switchQuizSubTab('tf')" id="quiz-btn-tf" class="quiz-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-600">
+                        3. Benar / Salah (5 Soal)
+                    </button>
+                </div>
+
+                <!-- QUIZ PART 1: PILIHAN GANDA (5 SOAL) -->
+                <div id="quiz-sec-pg" class="quiz-sub-sec block space-y-6">
+                    <div id="pg-questions-container" class="space-y-6">
+                        <!-- JS generated questions -->
+                    </div>
+                </div>
+
+                <!-- QUIZ PART 2: FILL IN THE BLANK (5 SOAL) -->
+                <div id="quiz-sec-fill" class="quiz-sub-sec hidden space-y-6">
+                    <div id="fill-questions-container" class="space-y-6">
+                        <!-- JS generated questions -->
+                    </div>
+                </div>
+
+                <!-- QUIZ PART 3: BENAR / SALAH (5 SOAL) -->
+                <div id="quiz-sec-tf" class="quiz-sub-sec hidden space-y-6">
+                    <div id="tf-questions-container" class="space-y-6">
+                        <!-- JS generated questions -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: HASIL & RAPOR -->
+        <section id="sec-hasil" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                <!-- Title Header -->
+                <div class="text-center space-y-2 border-b pb-4">
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Rapor & Pencapaian Belajar
+                    </span>
+                    <h2 class="title-font text-3xl font-extrabold text-slate-800">
+                        🏆 Hasil Petualangan Belajar
+                    </h2>
+                    <p class="text-xs text-slate-500">Lihat rekapitulasi poin, lencana kelulusan, dan pesan motivasi guru di sini!</p>
+                </div>
+
+                <!-- Score Board Summary Card -->
+                <div class="bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 text-white rounded-3xl p-6 sm:p-8 shadow-xl grid md:grid-cols-3 gap-6 items-center">
+                    <div class="text-center md:text-left space-y-2">
+                        <span class="text-xs uppercase tracking-widest text-amber-100 font-bold">Total Skor Terkumpul</span>
+                        <div id="summary-total-score" class="title-font text-5xl sm:text-6xl font-black">
+                            0
+                        </div>
+                        <p id="summary-level-name" class="text-sm font-semibold text-amber-100">Level: Pemula Matematika</p>
+                    </div>
+
+                    <div class="bg-white/20 backdrop-blur-md rounded-2xl p-4 space-y-2 border border-white/30 text-xs">
+                        <div class="flex justify-between font-bold">
+                            <span>Open The Box:</span>
+                            <span id="score-breakdown-box">0 / 100</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>Drag & Drop:</span>
+                            <span id="score-breakdown-drag">0 / 100</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>Menjodohkan:</span>
+                            <span id="score-breakdown-match">0 / 100</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>Kuis Evaluasi Total:</span>
+                            <span id="score-breakdown-quiz">0 / 150</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>Tantangan Cepat:</span>
+                            <span id="score-breakdown-ta">0 / 100</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white text-slate-800 rounded-2xl p-5 shadow-md space-y-2 text-center">
+                        <span class="text-3xl" id="motivation-emoji">⭐</span>
+                        <h4 id="motivation-title" class="title-font font-bold text-lg text-amber-600">Ayo Mulai Petualangan!</h4>
+                        <p id="motivation-body" class="text-xs text-slate-600 leading-relaxed">
+                            Selesaikan setiap permainan dan kuis untuk meningkatkan nilai dan membuka semua lencana emas!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Badges / Achievements Collection -->
+                <div class="space-y-3">
+                    <h3 class="title-font text-xl font-bold text-slate-800 flex items-center gap-2">
+                        🎖️ Koleksi Lencana Kebanggaan
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="badge-collection-grid">
+                        <!-- Dynamic rendering via JS -->
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex flex-wrap gap-3 justify-center pt-4 border-t">
+                    <button onclick="window.print()" class="px-5 py-2.5 bg-slate-800 text-white text-xs font-bold rounded-xl shadow-game hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-print"></i> Cetak / Simpan Raport
+                    </button>
+                    <button onclick="resetAllProgress()" class="px-5 py-2.5 bg-rose-100 text-rose-700 text-xs font-bold rounded-xl hover:bg-rose-200 transition">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Reset Ulang Progress
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t py-4 text-center text-xs text-slate-400 font-medium mt-6">
+        <p>© 2026 Media Pembelajaran Interaktif Matematika SD Kelas 5 • KPK & Faktorisasi Prima</p>
+    </footer>
+
+    <script>
+        // Global Game State
+        const state = {
+            studentName: "Siswa Hebat",
+            avatar: "🦊",
+            globalScore: 0,
+            scores: {
+                openTheBox: 0,
+                dragDrop: 0,
+                menjodohkan: 0,
+                tantangan: 0,
+                pg: 0,
+                fill: 0,
+                tf: 0
+            },
+            badgesEarned: new Set(),
+            boxOpened: [false, false, false, false, false],
+            timeAttackActive: false,
+            timeAttackTimer: null,
+            timeAttackSeconds: 60,
+            timeAttackScore: 0,
+            currentTAQuestionIdx: 0
+        };
+
+        // Web Audio Synthesizer for child-friendly sound effects without broken URLs
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.exponentialRampToValueAtTime(164.81, now + 0.2); // E3
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'pop') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'fanfare') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.15);
+                    osc.frequency.setValueAtTime(783.99, now + 0.3);
+                    osc.frequency.setValueAtTime(1046.50, now + 0.45);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+                    osc.start(now);
+                    osc.stop(now + 0.7);
+                }
+            } catch (e) {
+                console.log("Audio not allowed yet");
+            }
+        }
+
+        // Navigation Controller
+        function switchTab(tabId) {
+            playSound('pop');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-400', 'text-white', 'shadow-game-sm');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`tab-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-amber-400', 'text-white', 'shadow-game-sm');
+                activeNav.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            }
+
+            if (tabId === 'simulasi') runSimulation();
+            if (tabId === 'hasil') updateSummaryPage();
+        }
+
+        function setAvatar(emoji) {
+            state.avatar = emoji;
+            document.getElementById('user-avatar').innerText = emoji;
+            playSound('pop');
+        }
+
+        // Simulation Engine: Prime Factor Trees & LCM Calculator
+        function getPrimeFactors(n) {
+            const factors = [];
+            let divisor = 2;
+            let current = n;
+            while (current >= 2) {
+                if (current % divisor === 0) {
+                    factors.push(divisor);
+                    current /= divisor;
+                } else {
+                    divisor++;
+                }
+            }
+            return factors;
+        }
+
+        function formatFactorization(factors) {
+            const counts = {};
+            factors.forEach(x => counts[x] = (counts[x] || 0) + 1);
+            return Object.keys(counts).map(p => {
+                return counts[p] > 1 ? `${p}<sup>${counts[p]}</sup>` : `${p}`;
+            }).join(' × ');
+        }
+
+        function runSimulation() {
+            const numA = parseInt(document.getElementById('sim-num-1').value);
+            const numB = parseInt(document.getElementById('sim-num-2').value);
+
+            document.getElementById('sim-title-a').innerText = numA;
+            document.getElementById('sim-title-b').innerText = numB;
+
+            const factorsA = getPrimeFactors(numA);
+            const factorsB = getPrimeFactors(numB);
+
+            document.getElementById('sim-fact-a-badge').innerHTML = formatFactorization(factorsA);
+            document.getElementById('sim-fact-b-badge').innerHTML = formatFactorization(factorsB);
+
+            // Render visual trees
+            renderVisualTree('sim-tree-a-container', numA, factorsA, 'amber');
+            renderVisualTree('sim-tree-b-container', numB, factorsB, 'sky');
+
+            // Calculate LCM
+            const countsA = {}, countsB = {};
+            factorsA.forEach(x => countsA[x] = (countsA[x] || 0) + 1);
+            factorsB.forEach(x => countsB[x] = (countsB[x] || 0) + 1);
+
+            const allPrimes = new Set([...Object.keys(countsA), ...Object.keys(countsB)]);
+            let lcm = 1;
+            let detailParts = [];
+            let maxPowerParts = [];
+
+            allPrimes.forEach(p => {
+                const pNum = parseInt(p);
+                const expA = countsA[pNum] || 0;
+                const expB = countsB[pNum] || 0;
+                const maxExp = Math.max(expA, expB);
+                lcm *= Math.pow(pNum, maxExp);
+
+                detailParts.push(`Faktor <strong>${pNum}</strong>: terdapat di A (${expA}x) & B (${expB}x).`);
+                maxPowerParts.push(`${pNum}<sup>${maxExp}</sup>`);
+            });
+
+            document.getElementById('sim-compare-detail').innerHTML = detailParts.join('<br>');
+            document.getElementById('sim-max-powers').innerHTML = maxPowerParts.join(' × ');
+            document.getElementById('sim-kpk-result').innerText = lcm;
+        }
+
+        function renderVisualTree(containerId, number, factors, colorTheme) {
+            const container = document.getElementById(containerId);
+            let html = `<div class="flex flex-col items-center gap-2">`;
+            html += `<div class="w-12 h-12 bg-${colorTheme}-500 text-white font-bold rounded-2xl flex items-center justify-center text-lg title-font shadow-md">${number}</div>`;
+            
+            let current = number;
+            factors.forEach((f, idx) => {
+                if (idx < factors.length - 1) {
+                    const nextVal = current / f;
+                    html += `<div class="text-xs font-bold text-slate-400">↓ dibagi ${f}</div>`;
+                    html += `<div class="flex gap-4">
+                        <span class="w-9 h-9 bg-rose-500 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow-sm">${f}</span>
+                        <span class="w-9 h-9 bg-slate-200 text-slate-700 font-bold rounded-xl flex items-center justify-center text-sm">${nextVal}</span>
+                    </div>`;
+                    current = nextVal;
+                } else {
+                    html += `<div class="text-xs font-bold text-slate-400">↓ sisa prima</div>`;
+                    html += `<span class="w-9 h-9 bg-rose-500 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow-sm">${f}</span>`;
+                }
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        const boxQuestions = [
+            { id: 1, q: "Manakah yang merupakan faktor prima dari bilangan 15?", options: ["2", "3", "4", "6"], ans: "3", exp: "Faktor prima dari 15 adalah 3 dan 5 karena 3 × 5 = 15." },
+            { id: 2, q: "Bentuk faktorisasi prima dari angka 20 adalah...", options: ["2² × 5", "2 × 5²", "4 × 5", "2³ × 5"], ans: "2² × 5", exp: "20 = 2 × 2 × 5 = 2² × 5." },
+            { id: 3, q: "Jika A = 2³ dan B = 2² × 3, berapakah KPK(A, B)?", options: ["12", "24", "18", "36"], ans: "24", exp: "KPK = 2³ × 3 = 8 × 3 = 24." },
+            { id: 4, q: "Lampu Merah menyala tiap 15 detik, Lampu Biru tiap 20 detik. Kapan menyala bersamaan?", options: ["30 detik", "45 detik", "60 detik", "80 detik"], ans: "60 detik", exp: "KPK(15, 20) = 60 detik." },
+            { id: 5, q: "Di antara bilangan berikut, manakah yang BUKAN bilangan prima?", options: ["2", "3", "9", "11"], ans: "9", exp: "9 bukan prima karena bisa dibagi oleh 3 (faktornya: 1, 3, 9)." }
+        ];
+
+        function initOpenTheBox() {
+            const container = document.getElementById('box-grid');
+            container.innerHTML = boxQuestions.map((box, idx) => `
+                <button onclick="openBox(${idx})" id="box-btn-${idx}" class="p-6 bg-gradient-to-br from-amber-400 to-orange-400 rounded-2xl text-white shadow-game hover:shadow-game-sm transition transform hover:-translate-y-1 flex flex-col items-center gap-2 title-font">
+                    <i class="fa-solid ${state.boxOpened[idx] ? 'fa-box-open text-amber-200' : 'fa-box text-white'} text-4xl"></i>
+                    <span class="text-sm font-bold">Kotak #${box.id}</span>
+                </button>
+            `).join('');
+        }
+
+        function openBox(idx) {
+            playSound('pop');
+            const box = boxQuestions[idx];
+            document.getElementById('box-challenge-panel').classList.remove('hidden');
+            document.getElementById('box-panel-title').innerText = `Kotak Misteri #${box.id}`;
+            document.getElementById('box-panel-question').innerText = box.q;
+            
+            const optsContainer = document.getElementById('box-panel-options');
+            optsContainer.innerHTML = box.options.map(opt => `
+                <button onclick="submitBoxAnswer(${idx}, '${opt}')" class="p-3 bg-white border-2 border-amber-200 hover:border-amber-500 rounded-xl font-bold text-slate-700 text-sm transition text-left">
+                    ${opt}
+                </button>
+            `).join('');
+
+            document.getElementById('box-panel-feedback').classList.add('hidden');
+        }
+
+        function submitBoxAnswer(idx, chosen) {
+            const box = boxQuestions[idx];
+            const fb = document.getElementById('box-panel-feedback');
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+
+            if (chosen === box.ans) {
+                playSound('correct');
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = `✅ <strong>Benar!</strong> ${box.exp}`;
+                if (!state.boxOpened[idx]) {
+                    state.boxOpened[idx] = true;
+                    state.scores.openTheBox += 20;
+                    updateGlobalScore();
+                }
+                initOpenTheBox();
+            } else {
+                playSound('wrong');
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = `❌ <strong>Kurang tepat.</strong> Coba analisis lagi! ${box.exp}`;
+            }
+        }
+
+        function closeBoxPanel() {
+            document.getElementById('box-challenge-panel').classList.add('hidden');
+        }
+
+        const dragDropItems = [
+            { id: 1, title: "Lengkapi Pohon Faktor 18: (2 × 3 × ...)", targets: ["3"], options: ["2", "3", "5"], hint: "18 = 2 × 3 × 3" },
+            { id: 2, title: "Faktor Prima dari 40: (2³ × ...)", targets: ["5"], options: ["3", "5", "7"], hint: "40 = 8 × 5 = 2³ × 5" },
+            { id: 3, title: "Pangkat Terbesar faktor 3 pada KPK(12, 18): (3...)", targets: ["3²"], options: ["3", "3²", "3³"], hint: "18 memiliki 3²" },
+            { id: 4, title: "Susunan KPK(8, 12): (2³ × ...)", targets: ["3"], options: ["2", "3", "5"], hint: "KPK(8,12) = 24 = 2³ × 3" },
+            { id: 5, title: "Pilih faktor prima unik dari 30: (2 × 3 × ...)", targets: ["5"], options: ["4", "5", "6"], hint: "30 = 2 × 3 × 5" }
+        ];
+
+        let selectedTapOption = null;
+
+        function initDragDrop() {
+            const container = document.getElementById('dragdrop-list');
+            container.innerHTML = dragDropItems.map((item, idx) => `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-xs text-sky-700">Soal ${idx + 1} dari 5</span>
+                        <span class="text-[11px] text-slate-400 italic">Petunjuk: ${item.hint}</span>
+                    </div>
+                    <p class="font-semibold text-slate-800 text-sm">${item.title}</p>
+                    
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="text-xs font-bold text-slate-500">Pilihan:</div>
+                        <div class="flex gap-2" id="dd-opts-${idx}">
+                            ${item.options.map(opt => `
+                                <button onclick="handleTapOption(${idx}, '${opt}')" draggable="true" ondragstart="handleDragStart(event, '${opt}')" class="px-3 py-1.5 bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold rounded-xl text-xs cursor-pointer active:scale-95 transition">
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="text-xs font-bold text-slate-500 ml-auto">Target:</div>
+                        <div ondragover="event.preventDefault()" ondrop="handleDrop(event, ${idx})" onclick="handleTargetTap(${idx})" id="dd-target-${idx}" class="w-16 h-10 border-2 border-dashed border-sky-400 bg-white rounded-xl flex items-center justify-center font-bold text-sky-600 text-sm shadow-inner cursor-pointer">
+                            ---
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleDragStart(e, val) {
+            e.dataTransfer.setData("text/plain", val);
+        }
+
+        function handleDrop(e, idx) {
+            e.preventDefault();
+            const val = e.dataTransfer.getData("text/plain");
+            document.getElementById(`dd-target-${idx}`).innerText = val;
+            playSound('pop');
+        }
+
+        function handleTapOption(idx, val) {
+            selectedTapOption = val;
+            playSound('pop');
+            showToast(`Pilihan '${val}' dipilih! Ketuk kotak target [---] untuk memasukkan.`);
+        }
+
+        function handleTargetTap(idx) {
+            if (selectedTapOption) {
+                document.getElementById(`dd-target-${idx}`).innerText = selectedTapOption;
+                selectedTapOption = null;
+                playSound('pop');
+            }
+        }
+
+        function checkDragDropAll() {
+            let correctCount = 0;
+            dragDropItems.forEach((item, idx) => {
+                const filled = document.getElementById(`dd-target-${idx}`).innerText.trim();
+                if (filled === item.targets[0]) {
+                    correctCount++;
+                }
+            });
+
+            state.scores.dragDrop = correctCount * 20;
+            updateGlobalScore();
+
+            if (correctCount === 5) {
+                playSound('correct');
+                showToast("🎉 Hebat! Semua susunan Drag & Drop Benar!");
+            } else {
+                playSound('wrong');
+                showToast(`Kamu menjawab ${correctCount}/5 dengan benar. Coba lagi!`);
+            }
+        }
+
+        function resetDragDrop() {
+            initDragDrop();
+            playSound('pop');
+        }
+
+        const matchPairsData = [
+            { left: "Pasangan (12, 15)", right: "KPK = 60" },
+            { left: "Pasangan (8, 12)", right: "KPK = 24" },
+            { left: "Pasangan (9, 6)", right: "KPK = 18" },
+            { left: "Pasangan (10, 25)", right: "KPK = 50" },
+            { left: "Pasangan (14, 21)", right: "KPK = 42" }
+        ];
+
+        let selectedLeftIdx = null;
+        let matchedPairsCount = 0;
+
+        function initMenjodohkan() {
+            const container = document.getElementById('matching-board');
+            const shuffledRight = [...matchPairsData].sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <div class="space-y-3" id="match-left-col">
+                    ${matchPairsData.map((p, idx) => `
+                        <button onclick="selectMatchLeft(${idx})" id="match-left-${idx}" class="w-full p-4 bg-purple-50 border-2 border-purple-200 hover:border-purple-400 rounded-2xl text-purple-900 font-bold text-xs sm:text-sm text-left transition shadow-sm">
+                            📌 ${p.left}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="space-y-3" id="match-right-col">
+                    ${shuffledRight.map((p, idx) => `
+                        <button onclick="selectMatchRight('${p.right}', this)" class="w-full p-4 bg-slate-50 border-2 border-slate-200 hover:border-purple-400 rounded-2xl text-slate-800 font-bold text-xs sm:text-sm text-left transition shadow-sm">
+                            🎯 ${p.right}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function selectMatchLeft(idx) {
+            playSound('pop');
+            selectedLeftIdx = idx;
+            document.querySelectorAll('#match-left-col button').forEach(btn => btn.classList.remove('border-purple-600', 'bg-purple-200'));
+            document.getElementById(`match-left-${idx}`).classList.add('border-purple-600', 'bg-purple-200');
+        }
+
+        function selectMatchRight(rightText, btnEl) {
+            if (selectedLeftIdx === null) {
+                showToast("Pilih kartu sebelah kiri terlebih dahulu!");
+                return;
+            }
+
+            const expectedRight = matchPairsData[selectedLeftIdx].right;
+            const leftBtn = document.getElementById(`match-left-${selectedLeftIdx}`);
+
+            if (rightText === expectedRight) {
+                playSound('correct');
+                leftBtn.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-900', 'pointer-events-none');
+                btnEl.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-900', 'pointer-events-none');
+                matchedPairsCount++;
+                state.scores.menjodohkan = matchedPairsCount * 20;
+                updateGlobalScore();
+                document.getElementById('match-score-badge').innerText = `Terjodohkan: ${matchedPairsCount}/5`;
+                selectedLeftIdx = null;
+            } else {
+                playSound('wrong');
+                showToast("Pasangan kurang tepat! Coba analisis faktorisasi primanya kembali.");
+            }
+        }
+
+        const timeAttackQuestions = [
+            { q: "KPK dari 4 dan 6 adalah...", options: ["12", "24", "10"], ans: "12" },
+            { q: "Apakah 7 merupakan bilangan prima?", options: ["Ya", "Bukan"], ans: "Ya" },
+            { q: "Faktorisasi prima dari 8 adalah...", options: ["2³", "2²", "2 × 4"], ans: "2³" },
+            { q: "KPK dari 5 dan 10 adalah...", options: ["10", "15", "50"], ans: "10" },
+            { q: "Pangkat terbesar faktor 2 dari 12 (2²×3) dan 18 (2×3²) adalah...", options: ["2²", "2¹", "2³"], ans: "2²" },
+            { q: "KPK dari 3 dan 5 adalah...", options: ["15", "8", "30"], ans: "15" }
+        ];
+
+        function startTimeAttack() {
+            playSound('fanfare');
+            state.timeAttackSeconds = 60;
+            state.timeAttackScore = 0;
+            state.currentTAQuestionIdx = 0;
+            state.timeAttackActive = true;
+
+            document.getElementById('btn-start-timeattack').classList.add('hidden');
+            document.getElementById('timeattack-box').classList.remove('hidden');
+
+            renderTAQuestion();
+
+            clearInterval(state.timeAttackTimer);
+            state.timeAttackTimer = setInterval(() => {
+                state.timeAttackSeconds--;
+                document.getElementById('time-attack-timer').innerText = state.timeAttackSeconds;
+
+                if (state.timeAttackSeconds <= 0) {
+                    clearInterval(state.timeAttackTimer);
+                    state.timeAttackActive = false;
+                    playSound('fanfare');
+                    showToast(`⏱️ Waktu Habis! Skor Tantangan Cepat: ${state.timeAttackScore} pt`);
+                    state.scores.tantangan = Math.min(100, state.timeAttackScore);
+                    updateGlobalScore();
+                    document.getElementById('btn-start-timeattack').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function renderTAQuestion() {
+            const qObj = timeAttackQuestions[state.currentTAQuestionIdx % timeAttackQuestions.length];
+            document.getElementById('ta-question-text').innerText = qObj.q;
+
+            const opts = document.getElementById('ta-options-container');
+            opts.innerHTML = qObj.options.map(opt => `
+                <button onclick="submitTAAnswer('${opt}')" class="p-3 bg-white border-2 border-rose-200 hover:border-rose-500 rounded-xl font-bold text-slate-800 text-sm transition title-font">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function submitTAAnswer(chosen) {
+            if (!state.timeAttackActive) return;
+            const qObj = timeAttackQuestions[state.currentTAQuestionIdx % timeAttackQuestions.length];
+
+            if (chosen === qObj.ans) {
+                playSound('correct');
+                state.timeAttackScore += 20;
+            } else {
+                playSound('wrong');
+            }
+
+            state.currentTAQuestionIdx++;
+            renderTAQuestion();
+        }
+
+        function switchGameSubTab(gameId) {
+            playSound('pop');
+            document.querySelectorAll('.game-sub-sec').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.game-sub-tab').forEach(btn => {
+                btn.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-800');
+                btn.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600');
+            });
+
+            document.getElementById(`game-sec-${gameId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-game-${gameId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-800');
+                activeBtn.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600');
+            }
+
+            if (gameId === 'openthebox') initOpenTheBox();
+            if (gameId === 'dragdrop') initDragDrop();
+            if (gameId === 'menjodohkan') initMenjodohkan();
+        }
+
+        const pgData = [
+            { q: "Faktorisasi prima dari bilangan 24 adalah...", opts: ["2³ × 3", "2² × 3²", "2 × 3³", "4 × 6"], ans: 0, exp: "24 = 2 × 2 × 2 × 3 = 2³ × 3." },
+            { q: "Faktorisasi prima dari 30 adalah...", opts: ["2 × 3 × 5", "2² × 5", "3 × 10", "2³ × 5"], ans: 0, exp: "30 = 2 × 3 × 5." },
+            { q: "Bilangan A = 2² × 3 dan B = 2 × 3². KPK dari A dan B adalah...", opts: ["2² × 3² = 36", "2 × 3 = 6", "2² × 3 = 12", "72"], ans: 0, exp: "Ambil semua faktor pangkat terbesar: 2² × 3² = 36." },
+            { q: "Lampu A menyala tiap 6 detik (2×3), Lampu B tiap 8 detik (2³). Kedua lampu menyala bersamaan tiap...", opts: ["24 detik", "14 detik", "48 detik", "12 detik"], ans: 0, exp: "KPK(6,8) = 2³ × 3 = 24." },
+            { q: "Rani les tiap 4 hari (2²), Sinta tiap 6 hari (2×3). Berapa hari lagi mereka les bersama?", opts: ["12 hari", "10 hari", "24 hari", "18 hari"], ans: 0, exp: "KPK(4,6) = 2² × 3 = 12." }
+        ];
+
+        const fillData = [
+            { q: "Faktorisasi prima dari 12 adalah 2² × [ ___ ]", ans: "3", exp: "12 = 4 × 3 = 2² × 3." },
+            { q: "Faktorisasi prima dari 18 adalah 2 × 3<sup>[ ___ ]</sup>", ans: "2", exp: "18 = 2 × 9 = 2 × 3²." },
+            { q: "Untuk mencari KPK, kita mengalikan semua faktor prima dengan pangkat yang paling [ ___ ] (besar / kecil)", ans: "besar", exp: "KPK memilih pangkat terbesar." },
+            { q: "KPK dari 10 (2×5) dan 15 (3×5) adalah 2 × 3 × 5 = [ ___ ]", ans: "30", exp: "2 × 3 × 5 = 30." },
+            { q: "Jam waker A berbunyi tiap 15 menit, jam B tiap 30 menit. Kedua jam berbunyi bersama setiap [ ___ ] menit.", ans: "30", exp: "KPK(15, 30) = 30." }
+        ];
+
+        const tfData = [
+            { q: "Bilangan 2 adalah satu-satunya bilangan prima yang genap.", ans: true, exp: "BENAR! Semua bilangan genap lain bisa dibagi 2." },
+            { q: "Untuk mencari KPK, kita hanya mengambil faktor yang sama dengan pangkat terkecil.", ans: false, exp: "SALAH! Itu aturan FPB. KPK mengambil SEMUA faktor dengan pangkat TERBESAR." },
+            { q: "Faktorisasi prima dari 16 adalah 2⁴.", ans: true, exp: "BENAR! 2 × 2 × 2 × 2 = 16." },
+            { q: "KPK dari dua bilangan prima 5 dan 7 adalah 35.", ans: true, exp: "BENAR! Karena keduanya prima, KPK = 5 × 7 = 35." },
+            { q: "Pohon faktor dihentikan jika hasil bagi berupa bilangan komposit.", ans: false, exp: "SALAH! Pembagian dihentikan jika hasil akhir sudah berupa BILANGAN PRIMA." }
+        ];
+
+        function initQuizPG() {
+            const container = document.getElementById('pg-questions-container');
+            container.innerHTML = pgData.map((item, idx) => `
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <span class="text-xs font-bold text-amber-600">Soal Pilihan Ganda #${idx + 1}</span>
+                    <p class="font-bold text-slate-800 text-sm sm:text-base">${item.q}</p>
+                    <div class="grid sm:grid-cols-2 gap-2">
+                        ${item.opts.map((opt, optIdx) => `
+                            <button onclick="submitPGAnswer(${idx}, ${optIdx})" id="pg-opt-${idx}-${optIdx}" class="p-3 bg-white border-2 border-slate-200 hover:border-amber-400 rounded-xl text-left font-semibold text-slate-700 text-xs sm:text-sm transition">
+                                ${['A','B','C','D'][optIdx]}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="pg-fb-${idx}" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+                </div>
+            `).join('');
+        }
+
+        function submitPGAnswer(qIdx, chosenIdx) {
+            const item = pgData[qIdx];
+            const fb = document.getElementById(`pg-fb-${qIdx}`);
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+
+            if (chosenIdx === item.ans) {
+                playSound('correct');
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = `✅ <strong>Jawaban Benar!</strong> ${item.exp}`;
+            } else {
+                playSound('wrong');
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = `❌ <strong>Kurang Tepat.</strong> ${item.exp}`;
+            }
+            updateQuizPGScore();
+        }
+
+        function updateQuizPGScore() {
+            let correct = 0;
+            pgData.forEach((item, idx) => {
+                const fb = document.getElementById(`pg-fb-${idx}`);
+                if (fb && fb.innerHTML.includes('Jawaban Benar!')) correct++;
+            });
+            state.scores.pg = correct * 10;
+            updateGlobalScore();
+        }
+
+        function initQuizFill() {
+            const container = document.getElementById('fill-questions-container');
+            container.innerHTML = fillData.map((item, idx) => `
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <span class="text-xs font-bold text-sky-600">Soal Isian Singkat #${idx + 1}</span>
+                    <p class="font-bold text-slate-800 text-sm sm:text-base">${item.q}</p>
+                    <div class="flex gap-3">
+                        <input type="text" id="fill-input-${idx}" class="p-2 border-2 border-sky-300 rounded-xl text-xs font-bold focus:outline-none focus:border-sky-500 bg-white w-40" placeholder="Ketik jawaban...">
+                        <button onclick="submitFillAnswer(${idx})" class="px-4 py-2 bg-sky-500 text-white font-bold text-xs rounded-xl hover:bg-sky-600 transition">
+                            Kirim
+                        </button>
+                    </div>
+                    <div id="fill-fb-${idx}" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+                </div>
+            `).join('');
+        }
+
+        function submitFillAnswer(idx) {
+            const val = document.getElementById(`fill-input-${idx}`).value.trim().toLowerCase();
+            const item = fillData[idx];
+            const fb = document.getElementById(`fill-fb-${idx}`);
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+
+            if (val === item.ans.toLowerCase()) {
+                playSound('correct');
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = `✅ <strong>Jawaban Tepat!</strong> ${item.exp}`;
+            } else {
+                playSound('wrong');
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = `❌ <strong>Kurang tepat.</strong> Kunci: ${item.ans}. ${item.exp}`;
+            }
+
+            let correct = 0;
+            fillData.forEach((f, i) => {
+                const fbEl = document.getElementById(`fill-fb-${i}`);
+                if (fbEl && fbEl.innerHTML.includes('Jawaban Tepat!')) correct++;
+            });
+            state.scores.fill = correct * 10;
+            updateGlobalScore();
+        }
+
+        function initQuizTF() {
+            const container = document.getElementById('tf-questions-container');
+            container.innerHTML = tfData.map((item, idx) => `
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <span class="text-xs font-bold text-purple-600">Pernyataan Benar / Salah #${idx + 1}</span>
+                    <p class="font-bold text-slate-800 text-sm sm:text-base">"${item.q}"</p>
+                    <div class="flex gap-3">
+                        <button onclick="submitTFAnswer(${idx}, true)" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            👍 BENAR
+                        </button>
+                        <button onclick="submitTFAnswer(${idx}, false)" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            👎 SALAH
+                        </button>
+                    </div>
+                    <div id="tf-fb-${idx}" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+                </div>
+            `).join('');
+        }
+
+        function submitTFAnswer(idx, chosen) {
+            const item = tfData[idx];
+            const fb = document.getElementById(`tf-fb-${idx}`);
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+
+            if (chosen === item.ans) {
+                playSound('correct');
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = `✅ <strong>Jawaban Tepat!</strong> ${item.exp}`;
+            } else {
+                playSound('wrong');
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = `❌ <strong>Kurang tepat.</strong> ${item.exp}`;
+            }
+
+            let correct = 0;
+            tfData.forEach((t, i) => {
+                const fbEl = document.getElementById(`tf-fb-${i}`);
+                if (fbEl && fbEl.innerHTML.includes('Jawaban Tepat!')) correct++;
+            });
+            state.scores.tf = correct * 10;
+            updateGlobalScore();
+        }
+
+        function switchQuizSubTab(type) {
+            playSound('pop');
+            document.querySelectorAll('.quiz-sub-sec').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.quiz-sub-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-400', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            document.getElementById(`quiz-sec-${type}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`quiz-btn-${type}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-amber-400', 'text-white');
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+
+            if (type === 'pg') initQuizPG();
+            if (type === 'fill') initQuizFill();
+            if (type === 'tf') initQuizTF();
+        }
+
+        function updateGlobalScore() {
+            state.globalScore = Object.values(state.scores).reduce((a, b) => a + b, 0);
+            document.getElementById('global-score').innerText = state.globalScore;
+
+            // Level Progression
+            const levelBadge = document.getElementById('level-badge');
+            if (state.globalScore < 120) {
+                levelBadge.innerText = "Level: Pemula";
+                levelBadge.className = "px-2 py-0.5 bg-amber-200 text-amber-800 font-bold text-xs rounded-full title-font";
+            } else if (state.globalScore < 300) {
+                levelBadge.innerText = "Level: Sedang";
+                levelBadge.className = "px-2 py-0.5 bg-sky-200 text-sky-800 font-bold text-xs rounded-full title-font";
+            } else {
+                levelBadge.innerText = "Level: Pakar KPK";
+                levelBadge.className = "px-2 py-0.5 bg-emerald-200 text-emerald-800 font-bold text-xs rounded-full title-font";
+            }
+
+            // Global progress bar calculation (Total max points = ~550)
+            const progress = Math.min(100, Math.round((state.globalScore / 500) * 100));
+            document.getElementById('overall-progress-bar').style.width = `${progress}%`;
+            document.getElementById('overall-progress-text').innerText = `${progress}%`;
+        }
+
+        function updateSummaryPage() {
+            document.getElementById('summary-total-score').innerText = state.globalScore;
+            document.getElementById('score-breakdown-box').innerText = `${state.scores.openTheBox} / 100`;
+            document.getElementById('score-breakdown-drag').innerText = `${state.scores.dragDrop} / 100`;
+            document.getElementById('score-breakdown-match').innerText = `${state.scores.menjodohkan} / 100`;
+            document.getElementById('score-breakdown-quiz').innerText = `${state.scores.pg + state.scores.fill + state.scores.tf} / 150`;
+            document.getElementById('score-breakdown-ta').innerText = `${state.scores.tantangan} / 100`;
+
+            const emo = document.getElementById('motivation-emoji');
+            const title = document.getElementById('motivation-title');
+            const body = document.getElementById('motivation-body');
+
+            if (state.globalScore >= 350) {
+                emo.innerText = "🏆";
+                title.innerText = "Luar Biasa! Master Matematika!";
+                body.innerText = "Selamat! Kamu telah menguasai konsep faktorisasi prima dan KPK dengan sangat sempurna! Pertahankan prestasimu!";
+            } else if (state.globalScore >= 150) {
+                emo.innerText = "🌟";
+                title.innerText = "Hebat! Terus Tingkatkan!";
+                body.innerText = "Kamu sudah memahami langkah dasar KPK dengan sangat baik. Mari coba latihan lagi untuk mendapatkan skor maksimal!";
+            } else {
+                emo.innerText = "🌱";
+                title.innerText = "Ayo Semangat Belajar!";
+                body.innerText = "Jangan menyerah! Buka materi dan coba permainan simulasi interaktif untuk lebih memahami rumus KPK!";
+            }
+
+            // Render Badges
+            const badges = [
+                { title: "Detektif Prima", desc: "Membuka Open The Box", active: state.scores.openTheBox > 0, icon: "🔍" },
+                { title: "Penyusun Pohon", desc: "Selesaikan Drag & Drop", active: state.scores.dragDrop >= 60, icon: "🌳" },
+                { title: "Jagoan Pasangan", desc: "Menjodohkan Sempurna", active: state.scores.menjodohkan >= 80, icon: "🔗" },
+                { title: "Pakar Kuis", desc: "Kuis Total > 100 pt", active: (state.scores.pg + state.scores.fill + state.scores.tf) >= 100, icon: "👑" }
+            ];
+
+            const grid = document.getElementById('badge-collection-grid');
+            grid.innerHTML = badges.map(b => `
+                <div class="p-4 rounded-2xl border-2 ${b.active ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-slate-100 border-slate-200 text-slate-400 opacity-60'} text-center space-y-1">
+                    <div class="text-3xl">${b.icon}</div>
+                    <h5 class="font-bold text-xs title-font">${b.title}</h5>
+                    <p class="text-[10px] leading-tight">${b.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 transition-all duration-300";
+            toast.innerHTML = `<i class="fa-solid fa-bell text-amber-400"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function resetAllProgress() {
+            if (confirm("Apakah kamu yakin ingin mengulang semua nilai dan permainan dari awal?")) {
+                state.globalScore = 0;
+                Object.keys(state.scores).forEach(k => state.scores[k] = 0);
+                state.boxOpened = [false, false, false, false, false];
+                updateGlobalScore();
+                switchTab('beranda');
+                showToast("Progress telah direset dari awal.");
+            }
+        }
+
+        // Window Load Initialization
+        window.onload = function() {
+            runSimulation();
+            initOpenTheBox();
+            initDragDrop();
+            initMenjodohkan();
+            initQuizPG();
+            
+            // Sync Name input
+            const nameInput = document.getElementById('student-name-input');
+            if (nameInput) {
+                nameInput.addEventListener('input', (e) => {
+                    state.studentName = e.target.value || "Siswa Hebat";
+                });
+            }
+        };
+    </script>
+</body>
+</html>
